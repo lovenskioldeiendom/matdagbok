@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Matdagbok</title>
+  <meta name="theme-color" content="#fff8f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1d1a18" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Matdagbok">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Innlogging -->
+    <section id="view-login" class="view" hidden>
+      <div class="login-wrap">
+        <div class="logo-big" aria-hidden="true">🍓</div>
+        <h1>Matdagbok</h1>
+        <p class="muted">Logg inn for å lagre det du spiser.</p>
+        <form id="login-form" class="card stack">
+          <label>E-post<input type="email" id="login-email" autocomplete="username" required></label>
+          <label>Passord<input type="password" id="login-password" autocomplete="current-password" required minlength="6"></label>
+          <button type="submit" class="btn primary" id="login-submit">Logg inn</button>
+          <button type="button" class="btn ghost" id="login-toggle">Ny bruker? Lag konto</button>
+          <p class="error" id="login-error" hidden></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Dagbok -->
+    <section id="view-day" class="view" hidden>
+      <header class="topbar">
+        <button class="icon-btn" id="day-prev" aria-label="Forrige dag">‹</button>
+        <button class="day-title" id="day-title" aria-label="Velg dato"></button>
+        <button class="icon-btn" id="day-next" aria-label="Neste dag">›</button>
+        <input type="date" id="day-picker" class="visually-hidden" tabindex="-1">
+      </header>
+      <div class="seg who" id="who-day" hidden></div>
+      <div id="viewing-banner" class="banner" hidden></div>
+      <div id="demo-banner" class="banner" hidden>Demomodus: lagres bare på denne telefonen.</div>
+      <div id="day-summary" class="summary"></div>
+      <div id="day-list" class="day-list"></div>
+    </section>
+
+    <!-- Rapport -->
+    <section id="view-report" class="view" hidden>
+      <header class="topbar plain"><h2>Rapport</h2></header>
+      <div class="seg who" id="who-report" hidden></div>
+      <div class="card stack">
+        <div class="seg" id="report-range">
+          <button data-range="7" class="on">7 dager</button>
+          <button data-range="14">14 dager</button>
+          <button data-range="30">30 dager</button>
+          <button data-range="custom">Velg</button>
+        </div>
+        <div class="row" id="report-custom" hidden>
+          <label>Fra<input type="date" id="report-from"></label>
+          <label>Til<input type="date" id="report-to"></label>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="share-pdf">Del som PDF</button>
+          <button class="btn" id="share-csv">Del som regneark</button>
+        </div>
+      </div>
+      <div id="report-body"></div>
+    </section>
+
+    <!-- Innstillinger -->
+    <section id="view-settings" class="view" hidden>
+      <header class="topbar plain"><h2>Innstillinger</h2></header>
+      <div class="card stack">
+        <label class="switch-row">
+          <span>Vis kalorier og næring i dagboken</span>
+          <input type="checkbox" id="set-nutrition">
+        </label>
+        <p class="muted small">Næringsinnholdet blir uansett med i rapportene når det finnes.</p>
+        <label>Ditt navn (vises i rapporter og for foreldre)<input type="text" id="set-name" placeholder="Iris"></label>
+      </div>
+      <div class="card stack" id="share-card">
+        <h3>Foreldretilgang</h3>
+        <p class="muted small">Foreldre logger inn med sin egen konto og kan se dagboken og rapportene, men ikke endre noe.</p>
+        <div id="share-seenby"></div>
+        <button class="btn" id="share-make">Lag kode til en forelder</button>
+        <p class="code-box" id="share-code" hidden></p>
+        <hr>
+        <p class="small"><b>Er du forelder?</b> Skriv inn koden du har fått.</p>
+        <div class="row">
+          <input type="text" id="share-input" maxlength="6" placeholder="KODE" autocapitalize="characters" autocomplete="off">
+          <button class="btn primary" id="share-accept">Koble til</button>
+        </div>
+        <div id="share-cansee"></div>
+      </div>
+      <div class="card stack">
+        <p class="small" id="set-account"></p>
+        <p class="small muted" id="set-foods"></p>
+        <button class="btn" id="set-reload-foods">Oppdater matvaretabellen</button>
+        <button class="btn ghost danger" id="set-logout">Logg ut</button>
+      </div>
+      <p class="muted small center">Næringsdata: Matvaretabellen, Mattilsynet (matvaretabellen.no)</p>
+    </section>
+
+    <!-- Fanelinje -->
+    <nav class="tabbar" id="tabbar" hidden>
+      <button data-view="day" class="on"><span aria-hidden="true">📖</span>Dagbok</button>
+      <button id="tab-add" class="add" aria-label="Legg til mat"><span>+</span></button>
+      <button data-view="report"><span aria-hidden="true">📊</span>Rapport</button>
+      <button data-view="settings" class="tab-settings" aria-label="Innstillinger"><span aria-hidden="true">⚙️</span></button>
+    </nav>
+  </div>
+
+  <!-- Legg til / endre -->
+  <dialog id="sheet" class="sheet">
+    <form id="entry-form" method="dialog" class="sheet-inner">
+      <div class="sheet-head">
+        <button type="button" class="link" id="sheet-cancel">Avbryt</button>
+        <h3 id="sheet-title">Legg til</h3>
+        <button type="submit" class="link strong" id="sheet-save">Lagre</button>
+      </div>
+
+      <div class="row">
+        <label>Dato<input type="date" id="f-date" required></label>
+        <label>Klokkeslett<input type="time" id="f-time" required></label>
+      </div>
+
+      <div class="chips" id="f-meal" role="radiogroup" aria-label="Måltid"></div>
+
+      <label>Hva spiste du?
+        <input type="text" id="f-desc" autocomplete="off" required maxlength="300"
+               placeholder="Søk, f.eks. brødskive, eple, yoghurt">
+      </label>
+      <div id="f-results" class="results" hidden></div>
+      <div id="f-recent" class="recent"></div>
+
+      <label id="f-amount-wrap">Mengde (valgfritt)
+        <input type="text" id="f-amount-text" maxlength="60" placeholder="F.eks. 2 skiver, 1 glass, en liten bolle">
+      </label>
+
+      <div id="f-food" class="food-box" hidden>
+        <div class="food-head">
+          <span id="f-food-name"></span>
+          <button type="button" class="link small" id="f-food-clear">Fjern kobling</button>
+        </div>
+        <div class="chips" id="f-portions"></div>
+        <div class="row">
+          <label>Antall<input type="number" id="f-qty" inputmode="decimal" min="0" step="0.5" value="1"></label>
+          <label>Gram totalt<input type="number" id="f-grams" inputmode="decimal" min="0" step="1"></label>
+        </div>
+        <p class="nutri small" id="f-nutri"></p>
+      </div>
+
+      <label>Kommentar (valgfritt)
+        <input type="text" id="f-note" maxlength="500" placeholder="F.eks. hvor, med hvem, hvordan det føltes">
+      </label>
+
+      <button type="button" class="btn ghost danger" id="f-delete" hidden>Slett</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
