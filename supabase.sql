@@ -109,3 +109,12 @@ create policy "Les egne og delte" on public.food_entries for select to authentic
     or exists (select 1 from public.viewers v
                where v.owner_id = food_entries.user_id and v.viewer_id = (select auth.uid()))
   );
+
+-- Gir innloggede brukere tilgang til tabellene via appen (tilgangsreglene over gjelder fortsatt)
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.food_entries to authenticated;
+grant select, insert, delete on public.share_codes to authenticated;
+grant select, delete on public.viewers to authenticated;
+
+-- Ber Supabase laste inn tabellene på nytt med en gang
+notify pgrst, 'reload schema';

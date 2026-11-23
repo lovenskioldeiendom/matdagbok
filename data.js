@@ -72,6 +72,9 @@ function norskFeil(msg) {
   if (/Unable to validate email|invalid format|is invalid/i.test(msg)) return 'E-postadressen ble ikke godtatt. Sjekk at den er skrevet riktig.';
   if (/weak|Password should contain|known to be weak/i.test(msg)) return 'Passordet er for svakt. Bruk minst 8 tegn med både bokstaver og tall.';
   if (/Invalid API key|No API key|apikey/i.test(msg)) return 'Supabase-nøkkelen ble ikke godtatt. Sjekk nøkkelen i config.js.';
+  if (/permission denied/i.test(msg)) return 'Databasen mangler tilgang. Kjør den nyeste supabase.sql i Supabase (SQL Editor).';
+  if (/Could not find the '.*' column|column .* does not exist/i.test(msg)) return 'Tabellen i databasen har feil kolonner. Kjør den nyeste supabase.sql i Supabase. (' + msg + ')';
+  if (/row-level security/i.test(msg)) return 'Databasen avviste lagringen (tilgangsregler). Logg ut og inn igjen, eller kjør supabase.sql på nytt.';
   if (/relation .* does not exist|Could not find the (table|function)/i.test(msg)) return 'Databasen er ikke satt opp ennå (kjør supabase.sql).';
   if (/Failed to fetch|NetworkError/i.test(msg)) return 'Ingen nettforbindelse. Prøv igjen.';
   return `Noe gikk galt: ${msg}`;

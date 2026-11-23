@@ -156,3 +156,5 @@ input:focus { outline: none; border-color: var(--accent); }
 hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; width: 100%; }
 h3 { font-size: 18px; }
 .entry[disabled] { cursor: default; }
+
+.toast.long { border-radius: 16px; width: calc(100% - 32px); max-width: 520px; text-align: center; }

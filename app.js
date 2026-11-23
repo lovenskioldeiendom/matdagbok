@@ -23,8 +23,12 @@ const saveSettings = () => { try { localStorage.setItem('matdagbok-settings', JS
 // ---------- Hjelpere ----------
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.hidden = false;
-  clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+  // Feilmeldinger blir stående lenger, så de rekker å bli lest
+  const long = msg.length > 40;
+  t.classList.toggle('long', long);
+  clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, long ? 9000 : 2600);
 }
+$('toast').onclick = () => { $('toast').hidden = true; };
 function show(view) {
   S.view = view;
   for (const v of ['login', 'day', 'report', 'settings']) $(`view-${v}`).hidden = v !== view;
