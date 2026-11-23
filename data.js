@@ -66,9 +66,15 @@ function norskFeil(msg) {
   if (/Email not confirmed/i.test(msg)) return 'E-posten er ikke bekreftet ennå. Sjekk innboksen.';
   if (/already registered/i.test(msg)) return 'Det finnes allerede en konto med denne e-posten.';
   if (/Password should be/i.test(msg)) return 'Passordet må ha minst 6 tegn.';
+  if (/rate limit/i.test(msg)) return 'For mange e-poster sendt den siste timen. Slå av «Confirm email» i Supabase (Authentication → Sign In / Providers → Email), eller vent en time.';
+  if (/Error sending confirmation|sending.*email/i.test(msg)) return 'Supabase klarte ikke å sende bekreftelses-e-post. Slå av «Confirm email» i Supabase (Authentication → Sign In / Providers → Email).';
+  if (/signups? (not allowed|is disabled|are disabled)/i.test(msg)) return 'Nye kontoer er slått av i Supabase. Slå på «Allow new users to sign up» under Authentication → Sign In / Providers.';
+  if (/Unable to validate email|invalid format|is invalid/i.test(msg)) return 'E-postadressen ble ikke godtatt. Sjekk at den er skrevet riktig.';
+  if (/weak|Password should contain|known to be weak/i.test(msg)) return 'Passordet er for svakt. Bruk minst 8 tegn med både bokstaver og tall.';
+  if (/Invalid API key|No API key|apikey/i.test(msg)) return 'Supabase-nøkkelen ble ikke godtatt. Sjekk nøkkelen i config.js.';
   if (/relation .* does not exist|Could not find the (table|function)/i.test(msg)) return 'Databasen er ikke satt opp ennå (kjør supabase.sql).';
   if (/Failed to fetch|NetworkError/i.test(msg)) return 'Ingen nettforbindelse. Prøv igjen.';
-  return msg;
+  return `Noe gikk galt: ${msg}`;
 }
 
 function createLocalStore() {

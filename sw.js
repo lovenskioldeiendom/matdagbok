@@ -1,6 +1,6 @@
 // Enkel service worker: appen åpner raskt og fungerer med dårlig nett.
 // Appfiler hentes fra nett først (så oppdateringer kommer med en gang), ellers fra lager.
-const CACHE = 'matdagbok-v1';
+const CACHE = 'matdagbok-v2';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'data.js', 'foods.js', 'report.js', 'util.js', 'config.js',
   'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 
